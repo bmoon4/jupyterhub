@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyterhub
+  labels:
+    app: jupyterhub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyterhub
+  template:
+    metadata:
+      labels:
+        app: jupyterhub
+    spec:
+      containers:
+      - name: jupyterhub
+        image: bmoon0702/jupyterhub:test   # Locally built image
+        imagePullPolicy: Never    # Prevent Kubernetes from pulling from Docker Hub
+        ports:
+        - containerPort: 8000
