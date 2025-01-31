@@ -1,12 +1,6 @@
 # Base image with Python 3.12 on Debian Bookworm
 FROM python:3.12-bookworm
 
-# Set environment variables
-ENV NB_USER=jovyan \
-    NB_UID=1000 \
-    NB_GID=100 \
-    HOME=/opt/app-root/src
-
 # Install system dependencies
 USER root
 RUN apt-get update && apt-get install -y \
@@ -20,26 +14,32 @@ RUN apt-get update && apt-get install -y \
 # Install JupyterHub and necessary dependencies
 RUN pip install --no-cache-dir \
     jupyterhub \
-    jupyterlab \
-    notebook \
-    && npm install -g configurable-http-proxy
+    notebook
 
-# Ensure OpenShift/Kubernetes can run the container with a random UID
-RUN mkdir -p ${HOME} && \
-    chown -R 1000:0 ${HOME} && \
-    chmod -R 777 ${HOME}
+# Install configurable-http-proxy
+RUN npm install -g configurable-http-proxy
+
+# Ensure /opt/app-root/src and /home are writable (fix permission issue)
+RUN mkdir -p /opt/app-root/src && chmod -R 777 /opt/app-root/src
+RUN chmod 777 /home
 
 # Set working directory
-WORKDIR ${HOME}
+WORKDIR /opt/app-root/src
 
-# Generate a default JupyterHub config
-# RUN jupyterhub --generate-config -f ${HOME}/jupyterhub_config.py
+# Copy JupyterHub config file
 COPY jupyterhub_config.py /opt/app-root/src/jupyterhub_config.py
-RUN chown 1000:0 /opt/app-root/src/jupyterhub_config.py && chmod 644 /opt/app-root/src/jupyterhub_config.py
+RUN chmod 644 /opt/app-root/src/jupyterhub_config.py
+
 # Expose JupyterHub port
 EXPOSE 8000
 
-# Switch to a non-root user (for Kubernetes security)
+# Ensure system users exist
+RUN useradd -m -s /bin/bash testuser && echo "testuser:testpassword" | chpasswd
+RUN useradd -m -s /bin/bash admin && echo "admin:adminpassword" | chpasswd
+
+RUN mkdir -p /home/admin && chown 1000:0 /home/admin && chmod 777 /home/admin
+
+# Switch to non-root (for security)
 USER 1000
 
 # Start JupyterHub
