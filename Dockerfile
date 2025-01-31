@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir \
 # Install configurable-http-proxy
 RUN npm install -g configurable-http-proxy
 
-# Ensure /opt/app-root/src and /home are writable (fix permission issue)
+# Ensure /opt/app-root/src and /home are writable
 RUN mkdir -p /opt/app-root/src && chmod -R 777 /opt/app-root/src
 RUN chmod 777 /home
 
@@ -34,13 +34,13 @@ RUN chmod 644 /opt/app-root/src/jupyterhub_config.py
 EXPOSE 8000
 
 # Ensure system users exist
-RUN useradd -m -s /bin/bash testuser && echo "testuser:testpassword" | chpasswd
 RUN useradd -m -s /bin/bash admin && echo "admin:adminpassword" | chpasswd
 
-RUN mkdir -p /home/admin && chown 1000:0 /home/admin && chmod 777 /home/admin
+# Create necessary directories for the admin user
+RUN mkdir -p /home/admin/notebooks && chown -R admin:admin /home/admin/notebooks
 
-# Switch to non-root (for security)
-USER 1000
+# Switch to non-root user
+USER admin
 
 # Start JupyterHub
 CMD ["jupyterhub", "--config", "/opt/app-root/src/jupyterhub_config.py"]

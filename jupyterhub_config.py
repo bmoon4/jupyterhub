@@ -19,7 +19,7 @@ if "JUPYTERHUB_SERVICE_URL" not in os.environ:
     os.environ["JUPYTERHUB_SERVICE_URL"] = "http://localhost:8081/hub/"
 
 # Notebook directory for users
-c.Spawner.notebook_dir = '~/notebooks'
+c.Spawner.notebook_dir = '/home/admin/notebooks'
 c.Spawner.args = ['--NotebookApp.default_url=/tree']
 
 # Set the log level for debugging
