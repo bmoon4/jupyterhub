@@ -24,3 +24,4 @@ c.Spawner.args = ['--NotebookApp.default_url=/tree']
 
 # Set the log level for debugging
 c.JupyterHub.log_level = 'DEBUG'
+c.Spawner.cmd = ['/usr/local/bin/jupyterhub-singleuser']

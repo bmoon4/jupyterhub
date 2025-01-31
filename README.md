@@ -49,3 +49,7 @@ http://localhost:8080
 ```
 ![Image](https://github.com/user-attachments/assets/eb05f63b-67cf-4221-8558-af05927304fb)
 
+- username: admin
+- password: password
+
+![Image](https://github.com/user-attachments/assets/0d3f0317-f10e-4373-b037-ec6c065db49e)
